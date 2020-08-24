@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["FirewallAction",""],["FirewallRuleDirection",""]],"fn":[["bstr_to_os_string","Panics if bstr is null or bstr data length in bytes is not a multiple of 2 # Safety bstr must be a valid BSTR."],["os_str_to_bstr",""]],"mod":[["policy",""],["rule",""],["rules",""]],"struct":[["FirewallProfile",""],["FirewallRulesIter",""],["VariantEnumerator",""]]});
