@@ -33,7 +33,7 @@ jobs:
           command: clippy
           args: '--tests -- -D warnings'
   cargo-deny:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: EmbarkStudios/cargo-deny-action@v1
