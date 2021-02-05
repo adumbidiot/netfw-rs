@@ -1,6 +1,4 @@
 use crate::{
-    bstr_to_os_string,
-    os_str_to_bstr,
     FirewallAction,
     FirewallProfile,
     FirewallRuleDirection,
@@ -17,22 +15,17 @@ use netfw_sys::{
     NET_FW_ACTION,
     NET_FW_RULE_DIRECTION,
 };
-use std::{
-    convert::TryFrom,
-    ffi::{
-        OsStr,
-        OsString,
-    },
+use skylight::oleauto::{
+    BStr,
+    BStrRef,
 };
+use std::convert::TryFrom;
 use winapi::{
     shared::wtypes::{
         VARIANT_FALSE,
         VARIANT_TRUE,
     },
-    um::{
-        oleauto::SysFreeString,
-        winnt::LONG,
-    },
+    um::winnt::LONG,
 };
 
 #[repr(transparent)]
@@ -45,21 +38,19 @@ impl FirewallRule {
             .map_err(std::io::Error::from_raw_os_error)
     }
 
-    pub fn get_name(&self) -> Result<OsString, std::io::Error> {
+    pub fn get_name(&self) -> Result<BStr, std::io::Error> {
         let mut bstr = std::ptr::null_mut();
         let ret = unsafe { self.0.get_name(&mut bstr) };
 
         if FAILED(ret) {
             Err(std::io::Error::from_raw_os_error(ret))
         } else {
-            Ok(unsafe { bstr_to_os_string(bstr) })
+            Ok(unsafe { BStr::from_raw(bstr) })
         }
     }
 
-    pub fn set_name(&self, name: &OsStr) -> Result<(), std::io::Error> {
-        let name = os_str_to_bstr(name);
-        let ret = unsafe { self.0.put_name(name) };
-        unsafe { SysFreeString(name) }
+    pub fn set_name(&self, name: &BStrRef) -> Result<(), std::io::Error> {
+        let ret = unsafe { self.0.put_name(name.as_ptr() as *mut u16) };
 
         if FAILED(ret) {
             Err(std::io::Error::from_raw_os_error(ret))
@@ -68,7 +59,7 @@ impl FirewallRule {
         }
     }
 
-    pub fn get_description(&self) -> Result<Option<OsString>, std::io::Error> {
+    pub fn get_description(&self) -> Result<Option<BStr>, std::io::Error> {
         let mut bstr = std::ptr::null_mut();
         let ret = unsafe { self.0.get_description(&mut bstr) };
 
@@ -77,11 +68,11 @@ impl FirewallRule {
         } else if bstr.is_null() {
             Ok(None)
         } else {
-            Ok(Some(unsafe { bstr_to_os_string(bstr) }))
+            Ok(Some(unsafe { BStr::from_raw(bstr) }))
         }
     }
 
-    pub fn get_application_name(&self) -> Result<Option<OsString>, std::io::Error> {
+    pub fn get_application_name(&self) -> Result<Option<BStr>, std::io::Error> {
         let mut bstr = std::ptr::null_mut();
         let ret = unsafe { self.0.get_application_name(&mut bstr) };
 
@@ -90,14 +81,12 @@ impl FirewallRule {
         } else if bstr.is_null() {
             Ok(None)
         } else {
-            Ok(Some(unsafe { bstr_to_os_string(bstr) }))
+            Ok(Some(unsafe { BStr::from_raw(bstr) }))
         }
     }
 
-    pub fn set_application_name(&self, name: &OsStr) -> Result<(), std::io::Error> {
-        let name = os_str_to_bstr(name);
-        let ret = unsafe { self.0.put_application_name(name) };
-        unsafe { SysFreeString(name) }
+    pub fn set_application_name(&self, name: &BStrRef) -> Result<(), std::io::Error> {
+        let ret = unsafe { self.0.put_application_name(name.as_ptr() as *mut u16) };
 
         if FAILED(ret) {
             Err(std::io::Error::from_raw_os_error(ret))
@@ -106,7 +95,7 @@ impl FirewallRule {
         }
     }
 
-    pub fn get_service_name(&self) -> Result<Option<OsString>, std::io::Error> {
+    pub fn get_service_name(&self) -> Result<Option<BStr>, std::io::Error> {
         let mut bstr = std::ptr::null_mut();
         let ret = unsafe { self.0.get_service_name(&mut bstr) };
 
@@ -115,7 +104,7 @@ impl FirewallRule {
         } else if bstr.is_null() {
             Ok(None)
         } else {
-            Ok(Some(unsafe { bstr_to_os_string(bstr) }))
+            Ok(Some(unsafe { BStr::from_raw(bstr) }))
         }
     }
 
@@ -130,7 +119,7 @@ impl FirewallRule {
         }
     }
 
-    pub fn get_local_ports(&self) -> Result<Option<OsString>, std::io::Error> {
+    pub fn get_local_ports(&self) -> Result<Option<BStr>, std::io::Error> {
         let mut bstr = std::ptr::null_mut();
         let ret = unsafe { self.0.get_local_ports(&mut bstr) };
 
@@ -139,11 +128,11 @@ impl FirewallRule {
         } else if bstr.is_null() {
             Ok(None)
         } else {
-            Ok(Some(unsafe { bstr_to_os_string(bstr) }))
+            Ok(Some(unsafe { BStr::from_raw(bstr) }))
         }
     }
 
-    pub fn get_remote_ports(&self) -> Result<Option<OsString>, std::io::Error> {
+    pub fn get_remote_ports(&self) -> Result<Option<BStr>, std::io::Error> {
         let mut bstr = std::ptr::null_mut();
         let ret = unsafe { self.0.get_remote_ports(&mut bstr) };
 
@@ -152,11 +141,11 @@ impl FirewallRule {
         } else if bstr.is_null() {
             Ok(None)
         } else {
-            Ok(Some(unsafe { bstr_to_os_string(bstr) }))
+            Ok(Some(unsafe { BStr::from_raw(bstr) }))
         }
     }
 
-    pub fn get_local_addresses(&self) -> Result<Option<OsString>, std::io::Error> {
+    pub fn get_local_addresses(&self) -> Result<Option<BStr>, std::io::Error> {
         let mut bstr = std::ptr::null_mut();
         let ret = unsafe { self.0.get_local_addresses(&mut bstr) };
 
@@ -165,11 +154,11 @@ impl FirewallRule {
         } else if bstr.is_null() {
             Ok(None)
         } else {
-            Ok(Some(unsafe { bstr_to_os_string(bstr) }))
+            Ok(Some(unsafe { BStr::from_raw(bstr) }))
         }
     }
 
-    pub fn get_remote_addresses(&self) -> Result<Option<OsString>, std::io::Error> {
+    pub fn get_remote_addresses(&self) -> Result<Option<BStr>, std::io::Error> {
         let mut bstr = std::ptr::null_mut();
         let ret = unsafe { self.0.get_remote_addresses(&mut bstr) };
 
@@ -178,14 +167,12 @@ impl FirewallRule {
         } else if bstr.is_null() {
             Ok(None)
         } else {
-            Ok(Some(unsafe { bstr_to_os_string(bstr) }))
+            Ok(Some(unsafe { BStr::from_raw(bstr) }))
         }
     }
 
-    pub fn set_remote_addresses(&self, name: &OsStr) -> Result<(), std::io::Error> {
-        let name = os_str_to_bstr(name);
-        let ret = unsafe { self.0.put_remote_addresses(name) };
-        unsafe { SysFreeString(name) }
+    pub fn set_remote_addresses(&self, name: &BStrRef) -> Result<(), std::io::Error> {
+        let ret = unsafe { self.0.put_remote_addresses(name.as_ptr() as *mut u16) };
 
         if FAILED(ret) {
             Err(std::io::Error::from_raw_os_error(ret))
@@ -194,7 +181,7 @@ impl FirewallRule {
         }
     }
 
-    pub fn get_icmp_types_and_codes(&self) -> Result<Option<OsString>, std::io::Error> {
+    pub fn get_icmp_types_and_codes(&self) -> Result<Option<BStr>, std::io::Error> {
         let mut bstr = std::ptr::null_mut();
         let ret = unsafe { self.0.get_icmp_types_and_codes(&mut bstr) };
 
@@ -203,7 +190,7 @@ impl FirewallRule {
         } else if bstr.is_null() {
             Ok(None)
         } else {
-            Ok(Some(unsafe { bstr_to_os_string(bstr) }))
+            Ok(Some(unsafe { BStr::from_raw(bstr) }))
         }
     }
 
@@ -229,7 +216,7 @@ impl FirewallRule {
         }
     }
 
-    pub fn get_interfaces(&self) -> Result<Option<Vec<OsString>>, std::io::Error> {
+    pub fn get_interfaces(&self) -> Result<Option<Vec<BStr>>, std::io::Error> {
         let mut variant = Variant::new();
         let ret = unsafe { self.0.get_interfaces(&mut variant) };
 
@@ -252,13 +239,13 @@ impl FirewallRule {
             let data: Variant = unsafe { array.get(&[i]).expect("Valid Index") };
             let bstr = data.as_bstr().expect("Variant Bstr");
 
-            ret.push(unsafe { bstr_to_os_string(bstr) });
+            ret.push(unsafe { BStr::from_raw(bstr) });
         }
 
         Ok(Some(ret))
     }
 
-    pub fn get_interface_types(&self) -> Result<Option<OsString>, std::io::Error> {
+    pub fn get_interface_types(&self) -> Result<Option<BStr>, std::io::Error> {
         let mut bstr = std::ptr::null_mut();
         let ret = unsafe { self.0.get_interface_types(&mut bstr) };
 
@@ -267,7 +254,7 @@ impl FirewallRule {
         } else if bstr.is_null() {
             Ok(None)
         } else {
-            Ok(Some(unsafe { bstr_to_os_string(bstr) }))
+            Ok(Some(unsafe { BStr::from_raw(bstr) }))
         }
     }
 
@@ -293,7 +280,7 @@ impl FirewallRule {
         }
     }
 
-    pub fn get_grouping(&self) -> Result<Option<OsString>, std::io::Error> {
+    pub fn get_grouping(&self) -> Result<Option<BStr>, std::io::Error> {
         let mut bstr = std::ptr::null_mut();
         let ret = unsafe { self.0.get_grouping(&mut bstr) };
 
@@ -302,7 +289,7 @@ impl FirewallRule {
         } else if bstr.is_null() {
             Ok(None)
         } else {
-            Ok(Some(unsafe { bstr_to_os_string(bstr) }))
+            Ok(Some(unsafe { BStr::from_raw(bstr) }))
         }
     }
 

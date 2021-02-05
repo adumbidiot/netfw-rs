@@ -9,6 +9,7 @@ license = "MIT/Apache-2.0"
 bitflags = "1.2.1"
 com = "0.4.0"
 netfw-sys = { path = "./lib/netfw-sys" }
+skylight = { git = "https://github.com/adumbidiot/skylight-rs", rev = "6870196b7756430b405a9d3a988404d88536cca1", features = [ "oleauto" ] }
 winapi = { version = "0.3.9", features = [ "oaidl", "objbase", "oleauto" ] }
 
 [workspace]

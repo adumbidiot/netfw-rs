@@ -1,5 +1,4 @@
 use crate::{
-    os_str_to_bstr,
     FirewallRule,
     FirewallRulesIter,
     VariantEnumerator,
@@ -9,11 +8,8 @@ use com::{
     sys::FAILED,
 };
 use netfw_sys::INetFwRules;
-use std::{
-    ffi::OsStr,
-    mem::MaybeUninit,
-};
-use winapi::um::oleauto::SysFreeString;
+use skylight::oleauto::BStrRef;
+use std::mem::MaybeUninit;
 
 #[repr(transparent)]
 pub struct FirewallRules(pub INetFwRules);
@@ -40,10 +36,8 @@ impl FirewallRules {
         }
     }
 
-    pub fn remove(&self, name: &OsStr) -> Result<(), std::io::Error> {
-        let name = os_str_to_bstr(name);
-        let ret = unsafe { self.0.remove(name) };
-        unsafe { SysFreeString(name) }
+    pub fn remove(&self, name: &BStrRef) -> Result<(), std::io::Error> {
+        let ret = unsafe { self.0.remove(name.as_ptr() as *mut u16) };
 
         if FAILED(ret) {
             Err(std::io::Error::from_raw_os_error(ret))

@@ -44,6 +44,7 @@ dependencies = [
  "bitflags",
  "com",
  "netfw-sys",
+ "skylight",
  "winapi",
 ]
 
@@ -72,6 +73,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "991431c3519a3f36861882da93630ce66b52918dcf1b8e2fd66b397fc96f28df"
 dependencies = [
  "proc-macro2",
+]
+
+[[package]]
+name = "skylight"
+version = "0.0.0"
+source = "git+https://github.com/adumbidiot/skylight-rs?rev=6870196b7756430b405a9d3a988404d88536cca1#6870196b7756430b405a9d3a988404d88536cca1"
+dependencies = [
+ "bitflags",
+ "winapi",
 ]
 
 [[package]]
