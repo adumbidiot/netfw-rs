@@ -203,7 +203,7 @@ impl Iterator for FirewallRulesIter {
                     let firewall = variant
                         .as_dispatch()
                         .expect("Valid IDispatch")
-                        .get_interface()
+                        .query_interface()
                         .expect("Valid INetFwRule");
 
                     Some(Ok(FirewallRule(firewall)))

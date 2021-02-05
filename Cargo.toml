@@ -7,7 +7,7 @@ license = "MIT/Apache-2.0"
 
 [dependencies]
 bitflags = "1.2.1"
-com = { git = "https://github.com/microsoft/com-rs", rev = "3693ab2" }
+com = "0.4.0"
 netfw-sys = { path = "./lib/netfw-sys" }
 winapi = { version = "0.3.9", features = [ "oaidl", "objbase", "oleauto" ] }
 

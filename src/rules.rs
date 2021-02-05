@@ -61,7 +61,7 @@ impl FirewallRules {
         } else {
             let unknown: IUnknown = unsafe { ptr.assume_init() };
             Ok(VariantEnumerator::from_raw(
-                unknown.get_interface().expect("Valid IEnumVARIANT"),
+                unknown.query_interface().expect("Valid IEnumVARIANT"),
             ))
         }
     }
