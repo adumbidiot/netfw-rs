@@ -166,10 +166,7 @@ mod test {
     use super::*;
     use com::runtime::init_runtime;
 
-    fn display_firewall_info(
-        policy: &FirewallPolicy,
-        profile: FirewallProfile,
-    ) -> Result<(), std::io::Error> {
+    fn display_firewall_info(policy: &FirewallPolicy, profile: FirewallProfile) {
         println!("******************************************");
 
         if let Ok(enabled) = policy.get_firewall_enabled(profile) {
@@ -223,7 +220,6 @@ mod test {
         }
 
         println!();
-        Ok(())
     }
 
     #[test]
@@ -232,12 +228,12 @@ mod test {
         let firewall_policy = FirewallPolicy::new().unwrap();
 
         println!("Settings for the firewall domain profile:");
-        display_firewall_info(&firewall_policy, FirewallProfile::DOMAIN).unwrap();
+        display_firewall_info(&firewall_policy, FirewallProfile::DOMAIN);
 
         println!("Settings for the firewall private profile:");
-        display_firewall_info(&firewall_policy, FirewallProfile::PRIVATE).unwrap();
+        display_firewall_info(&firewall_policy, FirewallProfile::PRIVATE);
 
         println!("Settings for the firewall public profile:");
-        display_firewall_info(&firewall_policy, FirewallProfile::PUBLIC).unwrap();
+        display_firewall_info(&firewall_policy, FirewallProfile::PUBLIC);
     }
 }
