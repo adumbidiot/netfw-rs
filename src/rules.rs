@@ -1,7 +1,7 @@
 use crate::{
-    os_str_to_bstr,
     FirewallRule,
     FirewallRulesIter,
+    IntoBStrArg,
     VariantEnumerator,
 };
 use com::{
@@ -9,11 +9,7 @@ use com::{
     sys::FAILED,
 };
 use netfw_sys::INetFwRules;
-use std::{
-    ffi::OsStr,
-    mem::MaybeUninit,
-};
-use winapi::um::oleauto::SysFreeString;
+use std::mem::MaybeUninit;
 
 #[repr(transparent)]
 pub struct FirewallRules(pub INetFwRules);
@@ -40,10 +36,8 @@ impl FirewallRules {
         }
     }
 
-    pub fn remove(&self, name: &OsStr) -> Result<(), std::io::Error> {
-        let name = os_str_to_bstr(name);
-        let ret = unsafe { self.0.remove(name) };
-        unsafe { SysFreeString(name) }
+    pub fn remove<'a>(&self, name: impl IntoBStrArg<'a>) -> Result<(), std::io::Error> {
+        let ret = unsafe { self.0.remove(name.into_bstr_arg().as_ptr() as *mut u16) };
 
         if FAILED(ret) {
             Err(std::io::Error::from_raw_os_error(ret))
@@ -61,7 +55,7 @@ impl FirewallRules {
         } else {
             let unknown: IUnknown = unsafe { ptr.assume_init() };
             Ok(VariantEnumerator::from_raw(
-                unknown.get_interface().expect("Valid IEnumVARIANT"),
+                unknown.query_interface().expect("Valid IEnumVARIANT"),
             ))
         }
     }

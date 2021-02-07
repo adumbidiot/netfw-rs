@@ -1,6 +1,7 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::transmute_ptr_to_ptr)]
 #![allow(clippy::too_many_arguments)]
+#![allow(clippy::from_over_into)]
 
 pub mod safe_array;
 pub mod variant;
