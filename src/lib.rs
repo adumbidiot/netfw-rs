@@ -31,7 +31,11 @@ pub use skylight::oleauto::{
     BStr,
     BStrRef,
 };
-use std::convert::TryFrom;
+use std::{
+    borrow::Cow,
+    convert::TryFrom,
+    ffi::OsStr,
+};
 
 bitflags! {
     pub struct FirewallProfile: NET_FW_PROFILE_TYPE2 {
@@ -178,5 +182,21 @@ impl Iterator for FirewallRulesIter {
             }
             Err(e) => Some(Err(e)),
         }
+    }
+}
+
+pub trait IntoBStrArg<'a> {
+    fn into_bstr_arg(self) -> Cow<'a, BStrRef>;
+}
+
+impl<'a> IntoBStrArg<'a> for &str {
+    fn into_bstr_arg(self) -> Cow<'a, BStrRef> {
+        BStr::new(self).into()
+    }
+}
+
+impl<'a> IntoBStrArg<'a> for &OsStr {
+    fn into_bstr_arg(self) -> Cow<'a, BStrRef> {
+        BStr::new(self).into()
     }
 }

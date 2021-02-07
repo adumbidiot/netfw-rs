@@ -1,6 +1,7 @@
 use crate::{
     FirewallRule,
     FirewallRulesIter,
+    IntoBStrArg,
     VariantEnumerator,
 };
 use com::{
@@ -8,7 +9,6 @@ use com::{
     sys::FAILED,
 };
 use netfw_sys::INetFwRules;
-use skylight::oleauto::BStrRef;
 use std::mem::MaybeUninit;
 
 #[repr(transparent)]
@@ -36,8 +36,8 @@ impl FirewallRules {
         }
     }
 
-    pub fn remove(&self, name: &BStrRef) -> Result<(), std::io::Error> {
-        let ret = unsafe { self.0.remove(name.as_ptr() as *mut u16) };
+    pub fn remove<'a>(&self, name: impl IntoBStrArg<'a>) -> Result<(), std::io::Error> {
+        let ret = unsafe { self.0.remove(name.into_bstr_arg().as_ptr() as *mut u16) };
 
         if FAILED(ret) {
             Err(std::io::Error::from_raw_os_error(ret))

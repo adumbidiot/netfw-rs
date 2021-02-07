@@ -38,11 +38,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "libc"
+version = "0.2.85"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7ccac4b00700875e6a07c6cde370d44d32fa01c5a65cdd2fca6858c479d28bb3"
+
+[[package]]
 name = "netfw"
 version = "0.0.0"
 dependencies = [
  "bitflags",
  "com",
+ "libc",
  "netfw-sys",
  "skylight",
  "winapi",
@@ -78,7 +85,7 @@ dependencies = [
 [[package]]
 name = "skylight"
 version = "0.0.0"
-source = "git+https://github.com/adumbidiot/skylight-rs?rev=6870196b7756430b405a9d3a988404d88536cca1#6870196b7756430b405a9d3a988404d88536cca1"
+source = "git+https://github.com/adumbidiot/skylight-rs?rev=75f96917ab8d4851fa80f1c225faf551bfa3347a#75f96917ab8d4851fa80f1c225faf551bfa3347a"
 dependencies = [
  "bitflags",
  "winapi",

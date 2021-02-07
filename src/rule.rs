@@ -2,6 +2,7 @@ use crate::{
     FirewallAction,
     FirewallProfile,
     FirewallRuleDirection,
+    IntoBStrArg,
 };
 use com::{
     runtime::create_instance,
@@ -15,10 +16,7 @@ use netfw_sys::{
     NET_FW_ACTION,
     NET_FW_RULE_DIRECTION,
 };
-use skylight::oleauto::{
-    BStr,
-    BStrRef,
-};
+use skylight::oleauto::BStr;
 use std::convert::TryFrom;
 use winapi::{
     shared::wtypes::{
@@ -49,8 +47,8 @@ impl FirewallRule {
         }
     }
 
-    pub fn set_name(&self, name: &BStrRef) -> Result<(), std::io::Error> {
-        let ret = unsafe { self.0.put_name(name.as_ptr() as *mut u16) };
+    pub fn set_name<'a>(&self, name: impl IntoBStrArg<'a>) -> Result<(), std::io::Error> {
+        let ret = unsafe { self.0.put_name(name.into_bstr_arg().as_ptr() as *mut u16) };
 
         if FAILED(ret) {
             Err(std::io::Error::from_raw_os_error(ret))
@@ -85,8 +83,14 @@ impl FirewallRule {
         }
     }
 
-    pub fn set_application_name(&self, name: &BStrRef) -> Result<(), std::io::Error> {
-        let ret = unsafe { self.0.put_application_name(name.as_ptr() as *mut u16) };
+    pub fn set_application_name<'a>(
+        &self,
+        name: impl IntoBStrArg<'a>,
+    ) -> Result<(), std::io::Error> {
+        let ret = unsafe {
+            self.0
+                .put_application_name(name.into_bstr_arg().as_ptr() as *mut u16)
+        };
 
         if FAILED(ret) {
             Err(std::io::Error::from_raw_os_error(ret))
@@ -171,8 +175,14 @@ impl FirewallRule {
         }
     }
 
-    pub fn set_remote_addresses(&self, name: &BStrRef) -> Result<(), std::io::Error> {
-        let ret = unsafe { self.0.put_remote_addresses(name.as_ptr() as *mut u16) };
+    pub fn set_remote_addresses<'a>(
+        &self,
+        name: impl IntoBStrArg<'a>,
+    ) -> Result<(), std::io::Error> {
+        let ret = unsafe {
+            self.0
+                .put_remote_addresses(name.into_bstr_arg().as_ptr() as *mut u16)
+        };
 
         if FAILED(ret) {
             Err(std::io::Error::from_raw_os_error(ret))

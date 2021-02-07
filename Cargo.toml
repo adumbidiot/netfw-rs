@@ -9,8 +9,18 @@ license = "MIT/Apache-2.0"
 bitflags = "1.2.1"
 com = "0.4.0"
 netfw-sys = { path = "./lib/netfw-sys" }
-skylight = { git = "https://github.com/adumbidiot/skylight-rs", rev = "6870196b7756430b405a9d3a988404d88536cca1", features = [ "oleauto" ] }
+skylight = { git = "https://github.com/adumbidiot/skylight-rs", rev = "75f96917ab8d4851fa80f1c225faf551bfa3347a", features = [ "oleauto" ] }
 winapi = { version = "0.3.9", features = [ "oaidl", "objbase", "oleauto" ] }
+
+[dev-dependencies]
+libc = "0.2.80"
+winapi = { version = "0.3.9", features = [ "shellapi" ] }
 
 [workspace]
 members = [ "./lib/netfw-sys" ]
+
+[profile.release]
+codegen-units = 1
+debug = false
+lto = true
+opt-level = 3
