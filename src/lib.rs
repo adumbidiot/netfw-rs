@@ -27,21 +27,14 @@ use netfw_sys::{
     NET_FW_RULE_DIR_MAX,
     NET_FW_RULE_DIR_OUT,
 };
-use std::{
-    convert::TryFrom,
-    ffi::{
-        OsStr,
-        OsString,
-    },
-    iter::once,
-    os::windows::ffi::{
-        OsStrExt,
-        OsStringExt,
-    },
+pub use skylight::oleauto::{
+    BStr,
+    BStrRef,
 };
-use winapi::{
-    shared::wtypes::BSTR,
-    um::oleauto::SysAllocString,
+use std::{
+    borrow::Cow,
+    convert::TryFrom,
+    ffi::OsStr,
 };
 
 bitflags! {
@@ -121,30 +114,6 @@ impl TryFrom<NET_FW_RULE_DIRECTION> for FirewallRuleDirection {
     }
 }
 
-// TODO: Consider just making a bstr type to avoid allocating an os string.
-/// Panics if bstr is null or bstr data length in bytes is not a multiple of 2
-/// # Safety
-/// bstr must be a valid BSTR.
-pub unsafe fn bstr_to_os_string(bstr: BSTR) -> OsString {
-    assert!(!bstr.is_null(), "Null Pointer");
-
-    let len_ptr = (bstr as *const u32).sub(1);
-    let len_bytes = *len_ptr as usize;
-
-    assert_eq!(len_bytes % 2, 0, "The byte len is not a multiple of 2");
-
-    let slice = std::slice::from_raw_parts(bstr as *const u16, len_bytes / 2);
-
-    OsString::from_wide(slice)
-}
-
-pub fn os_str_to_bstr(s: &OsStr) -> BSTR {
-    let data: Vec<u16> = s.encode_wide().chain(once(0)).collect();
-    let ptr = unsafe { SysAllocString(data.as_ptr()) };
-    assert!(!ptr.is_null());
-    ptr
-}
-
 #[repr(transparent)]
 pub struct VariantEnumerator(IEnumVARIANT);
 
@@ -203,7 +172,7 @@ impl Iterator for FirewallRulesIter {
                     let firewall = variant
                         .as_dispatch()
                         .expect("Valid IDispatch")
-                        .get_interface()
+                        .query_interface()
                         .expect("Valid INetFwRule");
 
                     Some(Ok(FirewallRule(firewall)))
@@ -213,5 +182,21 @@ impl Iterator for FirewallRulesIter {
             }
             Err(e) => Some(Err(e)),
         }
+    }
+}
+
+pub trait IntoBStrArg<'a> {
+    fn into_bstr_arg(self) -> Cow<'a, BStrRef>;
+}
+
+impl<'a> IntoBStrArg<'a> for &str {
+    fn into_bstr_arg(self) -> Cow<'a, BStrRef> {
+        BStr::new(self).into()
+    }
+}
+
+impl<'a> IntoBStrArg<'a> for &OsStr {
+    fn into_bstr_arg(self) -> Cow<'a, BStrRef> {
+        BStr::new(self).into()
     }
 }
