@@ -1,4 +1,3 @@
-use com::runtime::init_runtime;
 use netfw::{
     FirewallAction,
     FirewallPolicy,
@@ -114,7 +113,7 @@ fn try_elevate(file: &OsStr, try_count: usize) -> Result<bool, std::io::Error> {
 }
 
 fn main() {
-    if let Err(e) = init_runtime() {
+    if let Err(e) = skylight::init_mta_com_runtime() {
         eprintln!("Failed to init COM Runtime: {}", e);
         return;
     }
